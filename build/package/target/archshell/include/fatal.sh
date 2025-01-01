@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
 
-fatal () {
-    local MESSAGE="$1"
-    local DELAY="30"
-
-    echo "$MESSAGE" 1>&2
-    echo "The system will be rebooted in ${DELAY} seconds."
-
-    sleep "${DELAY}"
-
+restart () {
     if mountpoint /run; then
         systemctl reboot
     else
@@ -17,4 +9,17 @@ fatal () {
 
     sleep infinity
     exit 1
+}
+
+fatal () {
+    local MESSAGE="$1"
+    local DELAY="30"
+
+    echo "$MESSAGE" 1>&2
+    echo "The system will be rebooted in ${DELAY} seconds. Press enter to skip..."
+
+    timeout "${DELAY}" bash -c "read" && \
+        sleep infinity
+
+    restart
 }
